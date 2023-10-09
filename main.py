@@ -21,12 +21,22 @@ except:
     logging.error("Invalid URL configuration")
     exit(1)
 
+# Configure request, including headers for CORS policy
+headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*"
+    }
+
 # retrieve new data from API
 try:
-    res = re.get(url)
+    res = re.get(url, headers=headers)
     assert res.status_code == 200
     assert res.headers["Content-Type"].startswith('application/json')
 except:
+    # save error as html if request fails
+    if res.headers['Content-Type'].startswith('text/html'):
+        with open('response.html', 'w') as f:
+            f.write(res.content)
     logging.error(f"Invalid response: {res.status_code}, {res.headers['Content-Type']}")
     exit(1)
 
